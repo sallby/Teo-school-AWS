@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo apt-get install wget apt-transport-https gnupg lsb-release
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb-release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update
           sudo apt-get install trivy
 
@@ -37,7 +37,8 @@ jobs:
           IMAGE_NAME=img_hasher
           IMAGE_TAG=v1.0.0
           ECR_NAME=crdjiby
-          ECR_LOGIN_SERVER=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+          # Use the AWS_ACCOUNT_ID secret variable
+          ECR_LOGIN_SERVER=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
           # Build the Docker image
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
