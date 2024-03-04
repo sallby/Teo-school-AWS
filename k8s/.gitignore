@@ -1,0 +1,7 @@
+# Ignorer les fichiers de configuration Prometheus et Grafana
+alerting_rules.yml
+grafana.yaml
+prometheus.yaml
+settings.json
+argocd
+argocd.pub

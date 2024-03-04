@@ -1,0 +1,62 @@
+name: delete
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Check and Install Az CLI
+        run: |
+          if ! command -v az &> /dev/null
+          then
+            echo "Az CLI not found. Installing..."
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+          fi
+        shell: bash
+
+      - name: Login to Azure
+        id: azure_login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get credentials
+        run: az aks get-credentials --resource-group re-teoSchool-djiby --name aks-djiby
+        
+      - name: Delete Deployments
+        run: |
+          kubectl delete deployment hasher-deployment -n teoschool
+          kubectl delete deployment redis-deployment -n teoschool
+          kubectl delete deployment rng-deployment -n teoschool
+          kubectl delete deployment webui-deployment -n teoschool
+          kubectl delete deployment worker-deployment -n teoschool
+
+      - name: Delete Services
+        run: |
+          kubectl delete service hasher -n teoschool
+          kubectl delete service redis -n teoschool
+          kubectl delete service rng -n teoschool
+          kubectl delete service webui -n teoschool
+
+      - name: Delete HPA
+        run: |
+          kubectl delete hpa hpa-hasher -n teoschool
+          kubectl delete hpa hpa-redis -n teoschool
+          kubectl delete hpa hpa-rng -n teoschool
+          kubectl delete hpa hpa-webui -n teoschool
+          kubectl delete hpa hpa-worker -n teoschool
+      
+      - name: Delete namespace
+        run: |
+          kubectl delete namespace teoschool

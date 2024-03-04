@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rng-deployment
+  namespace: teoschool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rng
+  template:
+    metadata:
+      labels:
+        app: rng
+    spec:
+      containers:
+      - name: rng
+        image: crdjiby.azurecr.io/img_rng:v1.0.0
+        resources:
+          requests:
+            memory: "30Mi"
+            cpu: "0.1"   
+          limits:
+            memory: "40Mi" 
+            cpu: "0.2"
+        ports:
+        - containerPort: 80

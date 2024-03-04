@@ -1,0 +1,58 @@
+name: Docker Build and Push
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: Login to Azure
+        id: azure_login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_NAME=img_worker
+          IMAGE_TAG=v1.0.0
+          ACR_NAME=crdjiby
+          ACR_LOGIN_SERVER=$ACR_NAME.azurecr.io
+
+          # Build the Docker image
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+
+          # Tag the Docker image
+          docker tag $IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+
+          # Login to ACR
+          az acr login --name $ACR_NAME
+
+          # Push the Docker image to ACR
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Scan Docker Image with Trivy
+        run: |
+          IMAGE_NAME=img_worker
+          IMAGE_TAG=v1.0.0
+          trivy image $IMAGE_NAME:$IMAGE_TAG > $IMAGE_NAME:$IMAGE_TAG.txt
+          cat $IMAGE_NAME:$IMAGE_TAG.txt
+        continue-on-error: true

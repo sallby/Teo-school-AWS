@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deployment
+  namespace: teoschool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+      - name: webui
+        image: crdjiby.azurecr.io/img_webui:v1.0.0
+        resources:
+          requests:
+            memory: "30Mi"
+            cpu: "0.1"   
+          limits:
+            memory: "50Mi" 
+            cpu: "0.2"
+        ports:
+        - containerPort: 80

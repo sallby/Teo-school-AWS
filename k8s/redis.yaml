@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: teoschool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.0.14
+        resources:
+          requests:
+            memory: "20Mi"
+            cpu: "0.1"   
+          limits:
+            memory: "30Mi" 
+            cpu: "0.2"
+        ports:
+        - containerPort: 6379

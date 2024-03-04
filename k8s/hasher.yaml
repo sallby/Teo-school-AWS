@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasher-deployment
+  namespace: teoschool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hasher
+  template:
+    metadata:
+      labels:
+        app: hasher
+    spec:
+      containers:
+      - name: hasher
+        image: crdjiby.azurecr.io/img_hasher:v1.0.0
+        resources:
+          requests:
+            memory: "30Mi"
+            cpu: "0.1"   
+          limits:
+            memory: "40Mi" 
+            cpu: "0.2"
+        ports:
+        - containerPort: 80

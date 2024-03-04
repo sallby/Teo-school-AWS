@@ -1,0 +1,68 @@
+name: deploy
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Check and Install Az CLI
+        run: |
+          if ! command -v az &> /dev/null
+          then
+            echo "Az CLI not found. Installing..."
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+          fi
+        shell: bash
+
+      - name: Login to Azure
+        id: azure_login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get credentials
+        run: az aks get-credentials --resource-group re-teoSchool-djiby --name aks-djiby
+        
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl create namespace teoschool
+          kubectl apply -f redis.yaml
+          kubectl apply -f hasher.yaml
+          kubectl apply -f rng.yaml
+          kubectl apply -f worker.yaml
+          kubectl apply -f webui.yaml
+          kubectl apply -f svc-hasher.yaml
+          kubectl apply -f svc-rng.yaml
+          kubectl apply -f svc-redis.yaml
+          kubectl apply -f svc-webui.yaml
+          kubectl apply -f hpa-hasher.yaml
+          kubectl apply -f hpa-rng.yaml
+          kubectl apply -f hpa-redis.yaml
+          kubectl apply -f hpa-webui.yaml  
+          kubectl apply -f hpa-worker.yaml
+        
+      - name: Pause for 5 seconds
+        run: |
+          sleep 5
+        shell: bash
+        
+      - name: Get LoadBalancer IP
+        id: webui
+        run: |
+          WEBUI_IP=$(kubectl get svc webui -n teoschool -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          sleep 5
+          echo "L'adresse IP du service WebUI est : $WEBUI_IP"
+          kubectl get deploy -n teoschool
+          kubectl get svc -n teoschool
+        shell: bash
