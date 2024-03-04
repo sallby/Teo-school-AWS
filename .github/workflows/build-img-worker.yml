@@ -37,19 +37,19 @@ jobs:
           IMAGE_NAME=img_worker
           IMAGE_TAG=v1.0.0
           ECR_NAME=crdjiby
-          ECR_LOGIN_SERVER=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+          ECR_LOGIN_SERVER=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com
 
           # Build the Docker image
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
           # Tag the Docker image
-          docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_LOGIN_SERVER/$ECR_NAME:$IMAGE_NAME-$IMAGE_TAG
 
           # Login to ECR
           aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin $ECR_LOGIN_SERVER
 
           # Push the Docker image to ECR
-          docker push $ECR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          docker push $ECR_LOGIN_SERVER/$ECR_NAME:$IMAGE_NAME-$IMAGE_TAG
 
       - name: Scan Docker Image with Trivy
         run: |
