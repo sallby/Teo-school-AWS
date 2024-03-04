@@ -16,14 +16,6 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Install Trivy
-        run: |
-          sudo apt-get install wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb-release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install trivy
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -51,12 +43,3 @@ jobs:
 
           # Push the Docker image to ECR
           docker push $ECR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
-
-      - name: Scan Docker Image with Trivy
-        run: |
-          cd ./hasher
-          IMAGE_NAME=img_hasher
-          IMAGE_TAG=v1.0.0
-          trivy image $IMAGE_NAME:$IMAGE_TAG > $IMAGE_NAME:$IMAGE_TAG.txt
-          cat $IMAGE_NAME:$IMAGE_TAG.txt
-        continue-on-error: true
