@@ -1,72 +1,78 @@
-variable "resource_group_name" {
-  description = "Nom du groupe de ressources"
+variable "aws_region" {
+  description = "The AWS region"
   type        = string
-  default     = "TeoSchool-Djiby"
-}
-
-variable "resource_group_location" {
-  description = "Emplacement du groupe de ressources"
-  type        = string
-  default     = "West Europe"
-}
-
-variable "container_registry_name" {
-  description = "Nom du registre ACR"
-  type        = string
-  default     = "djibyACR"
-}
-
-variable "container_registry_sku" {
-  description = "Sku du registre ACR"
-  type        = string
-  default     = "Standard"
-}
-
-variable "admin_enabled" {
-  description = "Activation de l'administration du registre ACR"
-  type        = bool
-  default     = true
-}
-
-variable "aks_cluster_name" {
-  description = "Nom du cluster AKS"
-  type        = string
-  default     = "djibyAKSCluster"
-}
-
-variable "dns_prefix" {
-  description = "Préfixe DNS du cluster AKS"
-  type        = string
-  default     = "djibyaksdns"
+  default     = "us-east-1"
 }
 
 variable "kubernetes_version" {
-  description = "Version de Kubernetes"
+  description = "Version of Kubernetes"
   type        = string
-  default     = "1.28.0"
+  default     = "1.27"
 }
 
-variable "node_count" {
-  description = "Nombre de nœuds du pool par défaut"
-  type        = number
-  default     = 1
+variable "subnet_ids" {
+  description = "List of subnet IDs for the EKS cluster"
+  type        = list(string)
+  default     = []
 }
 
-variable "node_size" {
-  description = "Taille des nœuds du pool par défaut"
+variable "vpc_id" {
+  description = "ID of the VPC for the EKS cluster"
   type        = string
-  default     = "Standard_B2s"
-}
-
-variable "storage_account_name" {
-  type        = string
-  description = "The storage account name"
+  default     = ""
 }
 
 variable "tags" {
-  description = "Étiquettes pour le cluster AKS"
+  description = "Tags for the EKS cluster"
   type        = map(string)
   default = {
     Environment = "Dev"
   }
 }
+variable "container_registry_name" {
+  description = "Nom du registre de conteneurs"
+  type        = string
+  default     = "crdjiby"
+}
+
+variable "eks_cluster_name" {
+  description = "Nom du cluster EKS"
+  type        = string
+  default     = "djiby-eks-cluster"
+}
+
+variable "eks_cluster_role_arn" {
+  description = "ARN du rôle IAM du cluster EKS"
+  type        = string
+  default     = "arn:aws:iam::123456789012:role/djiby-eks-cluster-role"
+}
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+}
+
+variable "subnet_cidr_block_a" {
+  description = "CIDR block for the subnet"
+  type        = string
+  default     = "10.0.1.0/24" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+}
+
+variable "availability_zone_a" {
+  description = "Availability zone for the subnet"
+  type        = string
+  default     = "us-east-1a" # Exemple de valeur par défaut, à remplacer par votre propre zone de disponibilité
+}
+
+variable "subnet_cidr_block_b" {
+  description = "CIDR block for the subnet"
+  type        = string
+  default     = "10.0.2.0/24" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+}
+
+variable "availability_zone_b" {
+  description = "Availability zone for the subnet"
+  type        = string
+  default     = "us-east-1b" # Exemple de valeur par défaut, à remplacer par votre propre zone de disponibilité
+}
+

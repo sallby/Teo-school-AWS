@@ -1,8 +1,8 @@
 terraform {
-  backend "azurerm" {
-    resource_group_name  = "re-st-djiby"
-    storage_account_name = "stdjiby"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+  backend "s3" {
+    bucket         = "stdjiby"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "tfstate-lock"
   }
 }

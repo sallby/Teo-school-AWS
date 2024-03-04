@@ -1,20 +1,14 @@
-output "aks_id" {
-  value = azurerm_kubernetes_cluster.aks.id
+output "eks_id" {
+  value = aws_eks_cluster.eks.id
 }
-output "aks_fqdn" {
-  value = azurerm_kubernetes_cluster.aks.fqdn
+output "eks_endpoint" {
+  value = aws_eks_cluster.eks.endpoint
 }
-output "aks_node_rg" {
-  value = azurerm_kubernetes_cluster.aks.node_resource_group
+output "eks_cluster_sg_id" {
+  value = aws_security_group.eks_cluster_sg.id
 }
-output "acr_id" {
-  value = azurerm_container_registry.acr.id
+
+output "eks_ca_cert" {
+  value = aws_eks_cluster.eks.certificate_authority[0].data
 }
-output "acr_login_server" {
-  value = azurerm_container_registry.acr.login_server
-}
-resource "local_file" "kubeconfig" {
-  depends_on = [azurerm_kubernetes_cluster.aks]
-  filename   = "kubeconfig"
-  content    = azurerm_kubernetes_cluster.aks.kube_config_raw
-}
+

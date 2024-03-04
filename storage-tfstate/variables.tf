@@ -1,26 +1,17 @@
-variable "resource_group_name" {
-  description = "Nom du groupe de ressources"
+variable "bucket_name" {
+  description = "The name of the S3 bucket"
   type        = string
+  default     = "stdjiby"
 }
 
-variable "resource_group_location" {
-  description = "Emplacement du groupe de ressources"
+variable "aws_region" {
+  description = "The AWS region"
   type        = string
-}
-
-variable "account_tier" {
-  description = "Sku du registre ACR"
-  type        = string
-  default     = "Standard"
-}
-
-variable "storage_account_name" {
-  type        = string
-  description = "The storage account name"
+  default     = "us-east-1"
 }
 
 variable "tags" {
-  description = "Étiquettes pour le cluster AKS"
+  description = "Tags for the AWS resources"
   type        = map(string)
   default = {
     Environment = "Dev"

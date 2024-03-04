@@ -24,33 +24,36 @@ jobs:
           sudo apt-get update
           sudo apt-get install trivy
 
-      - name: Login to Azure
-        id: azure_login
-        uses: azure/login@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
       - name: Build and Push Docker Image
         run: |
+          cd ./rng
           IMAGE_NAME=img_rng
           IMAGE_TAG=v1.0.0
-          ACR_NAME=crdjiby
-          ACR_LOGIN_SERVER=$ACR_NAME.azurecr.io
+          ECR_NAME=crdjiby
+          ECR_LOGIN_SERVER=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
           # Build the Docker image
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
           # Tag the Docker image
-          docker tag $IMAGE_NAME:$IMAGE_TAG $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
 
-          # Login to ACR
-          az acr login --name $ACR_NAME
+          # Login to ECR
+          aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin $ECR_LOGIN_SERVER
 
-          # Push the Docker image to ACR
-          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          # Push the Docker image to ECR
+          docker push $ECR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
       
       - name: Scan Docker Image with Trivy
         run: |
+          cd ./rng
           IMAGE_NAME=img_rng
           IMAGE_TAG=v1.0.0
           trivy image $IMAGE_NAME:$IMAGE_TAG > $IMAGE_NAME:$IMAGE_TAG.txt

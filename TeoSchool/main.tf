@@ -1,61 +1,78 @@
-provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
-  skip_provider_registration = true
+provider "aws" {
+  region = var.aws_region
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.resource_group_location
+# Création du VPC
+resource "aws_vpc" "my_vpc" {
+  cidr_block = var.vpc_cidr_block
 }
 
-resource "azurerm_container_registry" "acr" {
-  name                = var.container_registry_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  sku                 = var.container_registry_sku
-  admin_enabled       = var.admin_enabled
+# Création de deux sous-réseaux dans des AZ différentes
+resource "aws_subnet" "public_subnet_a" {
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = var.subnet_cidr_block_a
+  availability_zone = var.availability_zone_a
 }
 
-resource "azurerm_log_analytics_workspace" "log_analytics" {
-  name                = "log-analytics-djiby"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
+resource "aws_subnet" "public_subnet_b" {
+  vpc_id            = aws_vpc.my_vpc.id
+  cidr_block        = var.subnet_cidr_block_b
+  availability_zone = var.availability_zone_b
 }
 
-resource "azurerm_kubernetes_cluster" "aks" {
-  name                = var.aks_cluster_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = var.dns_prefix
-  kubernetes_version  = var.kubernetes_version
+# Création du cluster EKS 
+resource "aws_eks_cluster" "eks" {
+  name     = var.eks_cluster_name
+  role_arn = aws_iam_role.eks_cluster_role.arn
+  version  = var.kubernetes_version
 
-  default_node_pool {
-    name       = "default"
-    node_count = var.node_count
-    vm_size    = var.node_size
+  vpc_config {
+    subnet_ids         = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
   }
-  identity {
-    type = "SystemAssigned"
-  }
-  network_profile {
-    load_balancer_sku = "standard"
-    network_plugin    = "kubenet"
-  }
+
   tags = var.tags
+}
 
-  oms_agent {
-      log_analytics_workspace_id  = azurerm_log_analytics_workspace.log_analytics.id
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "eks_cluster_role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [{
+      "Effect" : "Allow",
+      "Principal" : {
+        "Service" : "eks.amazonaws.com"
+      },
+      "Action" : "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = "eks_cluster_sg"
+  description = "Security group for EKS cluster"
+  vpc_id      = aws_vpc.my_vpc.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "azurerm_role_assignment" "role_acrpull" {
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "acrpull"
-  principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity.0.object_id
+resource "aws_ecr_repository" "ecr" {
+  name = var.container_registry_name
+}
+
+resource "aws_iam_role_policy_attachment" "eks_ecr_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_cluster_role.name
 }
