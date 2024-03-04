@@ -30,7 +30,7 @@ jobs:
           IMAGE_TAG=v1.0.0
           ECR_NAME=crdjiby
           # Use the AWS_ACCOUNT_ID secret variable
-          ECR_LOGIN_SERVER=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${AWS_REGION}.amazonaws.com
+          ECR_LOGIN_SERVER=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com
 
           # Build the Docker image
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
