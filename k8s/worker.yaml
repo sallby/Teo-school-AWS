@@ -14,15 +14,14 @@ spec:
         app: worker
     spec:
       containers:
-      - name: worker
-        image: crdjiby.azurecr.io/img_worker:v1.0.0
-        resources:
-          requests:
-            memory: "40Mi"
-            cpu: "0.1"   
-          limits:
-            memory: "50Mi" 
-            cpu: "0.2"
-        ports:
-        - containerPort: 80
-
+        - name: worker
+          image: 725972464939.dkr.ecr.us-east-1.amazonaws.com/crdjiby:img_worker-v1.0.0
+          resources:
+            requests:
+              memory: "40Mi"
+              cpu: "0.1"
+            limits:
+              memory: "50Mi"
+              cpu: "0.2"
+          ports:
+            - containerPort: 80

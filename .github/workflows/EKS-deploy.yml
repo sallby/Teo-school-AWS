@@ -16,23 +16,15 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Check and Install Az CLI
-        run: |
-          if ! command -v az &> /dev/null
-          then
-            echo "Az CLI not found. Installing..."
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          fi
-        shell: bash
-
-      - name: Login to Azure
-        id: azure_login
-        uses: azure/login@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Get credentials
-        run: az aks get-credentials --resource-group re-teoSchool-djiby --name aks-djiby
+        run: aws eks --region ${AWS_REGION} update-kubeconfig --name djiby-eks-cluster
         
       - name: Deploy to Kubernetes
         run: |
@@ -46,11 +38,6 @@ jobs:
           kubectl apply -f svc-rng.yaml
           kubectl apply -f svc-redis.yaml
           kubectl apply -f svc-webui.yaml
-          kubectl apply -f hpa-hasher.yaml
-          kubectl apply -f hpa-rng.yaml
-          kubectl apply -f hpa-redis.yaml
-          kubectl apply -f hpa-webui.yaml  
-          kubectl apply -f hpa-worker.yaml
         
       - name: Pause for 5 seconds
         run: |
@@ -60,9 +47,9 @@ jobs:
       - name: Get LoadBalancer IP
         id: webui
         run: |
-          WEBUI_IP=$(kubectl get svc webui -n teoschool -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          sleep 5
+          WEBUI_IP=$(aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName, `webui`)].DNSName' --output text)
           echo "L'adresse IP du service WebUI est : $WEBUI_IP"
           kubectl get deploy -n teoschool
           kubectl get svc -n teoschool
         shell: bash
+      

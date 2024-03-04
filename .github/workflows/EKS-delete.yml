@@ -16,23 +16,15 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Check and Install Az CLI
-        run: |
-          if ! command -v az &> /dev/null
-          then
-            echo "Az CLI not found. Installing..."
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          fi
-        shell: bash
-
-      - name: Login to Azure
-        id: azure_login
-        uses: azure/login@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+  
       - name: Get credentials
-        run: az aks get-credentials --resource-group re-teoSchool-djiby --name aks-djiby
+        run: aws eks --region ${AWS_REGION} update-kubeconfig --name djiby-eks-cluster
         
       - name: Delete Deployments
         run: |
@@ -48,14 +40,6 @@ jobs:
           kubectl delete service redis -n teoschool
           kubectl delete service rng -n teoschool
           kubectl delete service webui -n teoschool
-
-      - name: Delete HPA
-        run: |
-          kubectl delete hpa hpa-hasher -n teoschool
-          kubectl delete hpa hpa-redis -n teoschool
-          kubectl delete hpa hpa-rng -n teoschool
-          kubectl delete hpa hpa-webui -n teoschool
-          kubectl delete hpa hpa-worker -n teoschool
       
       - name: Delete namespace
         run: |
