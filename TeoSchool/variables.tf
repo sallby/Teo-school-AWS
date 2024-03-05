@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "kubernetes_version" {
   description = "Version of Kubernetes"
   type        = string
-  default     = "1.27"
+  default     = "1.28"
 }
 
 variable "subnet_ids" {
