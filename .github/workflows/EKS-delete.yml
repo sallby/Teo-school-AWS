@@ -1,4 +1,4 @@
-name: delete
+name: Delete resources EKS
 
 on:
   workflow_dispatch

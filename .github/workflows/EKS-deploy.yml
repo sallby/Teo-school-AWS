@@ -1,4 +1,4 @@
-name: deploy
+name: Deploy resources EKS
 
 on:
   workflow_dispatch

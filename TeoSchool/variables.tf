@@ -49,30 +49,30 @@ variable "eks_cluster_role_arn" {
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
-  default     = "10.0.0.0/16" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+  default     = "10.0.0.0/16"
 }
 
 variable "subnet_cidr_block_a" {
   description = "CIDR block for the subnet"
   type        = string
-  default     = "10.0.1.0/24" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+  default     = "10.0.1.0/24"
 }
 
 variable "availability_zone_a" {
   description = "Availability zone for the subnet"
   type        = string
-  default     = "us-east-1a" # Exemple de valeur par défaut, à remplacer par votre propre zone de disponibilité
+  default     = "us-east-1a"
 }
 
 variable "subnet_cidr_block_b" {
   description = "CIDR block for the subnet"
   type        = string
-  default     = "10.0.2.0/24" # Exemple de valeur par défaut, à remplacer par votre propre bloc CIDR
+  default     = "10.0.2.0/24"
 }
 
 variable "availability_zone_b" {
   description = "Availability zone for the subnet"
   type        = string
-  default     = "us-east-1b" # Exemple de valeur par défaut, à remplacer par votre propre zone de disponibilité
+  default     = "us-east-1b"
 }
 
