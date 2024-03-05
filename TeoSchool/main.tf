@@ -33,7 +33,7 @@ resource "aws_subnet" "public_subnet_b" {
 # Création du cluster EKS 
 resource "aws_eks_cluster" "eks" {
   name     = var.eks_cluster_name
-  role_arn = aws_iam_role.eks_cluster_role.arn
+  role_arn = aws_iam_role.eks_node_role.arn
   version  = var.kubernetes_version
 
   vpc_config {
@@ -109,5 +109,5 @@ resource "aws_ecr_repository" "ecr" {
 
 resource "aws_iam_role_policy_attachment" "eks_ecr_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_cluster_role.name
+  role       = aws_iam_role.eks_node_role.name
 }
