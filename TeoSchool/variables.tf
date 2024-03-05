@@ -76,3 +76,8 @@ variable "availability_zone_b" {
   default     = "us-east-1b"
 }
 
+variable "key_name" {
+  description = "Nom de la paire de clés pour accéder à l'instance"
+  type        = string
+  default     = "sallby"
+}
