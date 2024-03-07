@@ -28,6 +28,7 @@ jobs:
         
       - name: Delete Deployments
         run: |
+          cd ./k8s
           kubectl delete deployment hasher-deployment -n teoschool
           kubectl delete deployment redis-deployment -n teoschool
           kubectl delete deployment rng-deployment -n teoschool
@@ -36,6 +37,7 @@ jobs:
 
       - name: Delete Services
         run: |
+          cd ./k8s
           kubectl delete service hasher -n teoschool
           kubectl delete service redis -n teoschool
           kubectl delete service rng -n teoschool
@@ -43,4 +45,5 @@ jobs:
       
       - name: Delete namespace
         run: |
+          cd ./k8s
           kubectl delete namespace teoschool

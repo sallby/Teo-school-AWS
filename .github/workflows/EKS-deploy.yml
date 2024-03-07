@@ -28,6 +28,7 @@ jobs:
         
       - name: Deploy to Kubernetes
         run: |
+          cd ./k8s
           kubectl create namespace teoschool
           kubectl apply -f redis.yaml
           kubectl apply -f hasher.yaml
@@ -47,6 +48,7 @@ jobs:
       - name: Get LoadBalancer IP
         id: webui
         run: |
+          cd ./k8s
           WEBUI_IP=$(aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName, `webui`)].DNSName' --output text)
           echo "L'adresse IP du service WebUI est : $WEBUI_IP"
           kubectl get deploy -n teoschool
