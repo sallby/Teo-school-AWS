@@ -25,9 +25,9 @@ jobs:
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
-        working-directory: ./TeoSchool 
+        working-directory: ./terraform 
         run: terraform init -reconfigure
 
       - name: Destroy if approved
-        working-directory: ./TeoSchool
+        working-directory: ./terraform
         run: terraform destroy -auto-approve
