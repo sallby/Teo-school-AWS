@@ -25,7 +25,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          cd ./hasher
+          cd ./micro-services/hasher
           IMAGE_NAME=img_hasher
           IMAGE_TAG=v1.0.0
           ECR_NAME=crdjiby

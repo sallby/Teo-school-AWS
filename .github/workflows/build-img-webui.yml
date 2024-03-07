@@ -33,7 +33,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          cd ./webui
+          cd ./micro-services/webui
           IMAGE_NAME=img_webui
           IMAGE_TAG=v1.0.0
           ECR_NAME=crdjiby
@@ -53,7 +53,7 @@ jobs:
 
       - name: Scan Docker Image with Trivy
         run: |
-          cd ./webui
+          cd ./micro-services/webui
           IMAGE_NAME=img_webui
           IMAGE_TAG=v1.0.0
           trivy image $IMAGE_NAME:$IMAGE_TAG > $IMAGE_NAME:$IMAGE_TAG.txt
