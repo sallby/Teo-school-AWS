@@ -1,4 +1,4 @@
-FROM ruby:3.2-alpine
+FROM ruby:alpine
 RUN apk --no-cache add --update build-base curl \
     && gem install sinatra thin \
     && apk del build-base
