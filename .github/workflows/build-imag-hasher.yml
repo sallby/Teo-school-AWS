@@ -26,8 +26,8 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           cd ./micro-services/hasher
-          IMAGE_NAME=img_hasher
-          IMAGE_TAG=v1.0.0
+          IMAGE_NAME=hasher
+          IMAGE_TAG=v1.2.0
           ECR_NAME=crdjiby
           # Use the AWS_ACCOUNT_ID secret variable
           ECR_LOGIN_SERVER=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com

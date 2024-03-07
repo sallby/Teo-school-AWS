@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: hasher
-          image: 492364703439.dkr.ecr.us-east-1.amazonaws.com/crdjiby:img_hasher-v1.0.0
+          image: 492364703439.dkr.ecr.us-east-1.amazonaws.com/crdjiby:hasher-v1.2.0
           resources:
             requests:
               memory: "30Mi"
