@@ -26,24 +26,35 @@ jobs:
       - name: Get credentials
         run: aws eks --region ${AWS_REGION} update-kubeconfig --name djiby-eks-cluster
 
-      - name: Define AWS Account ID
+      - name: Get AWS Account ID
         run: |
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
+
+      #- name: Set Image ID Variable (Optional)
+        # Uncomment and customize if not using AWS account ID
+        # run: |
+        #   IMAGE_ID=your_custom_image_id  # Replace with your actual image ID
+        #   echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
+
+      - name: Replace Variable in hasher.yaml
+        run: |
+          sed -i "s|var.IMAGE_ID|$AWS_ACCOUNT_ID|g" hasher.yaml
         
       - name: Deploy to Kubernetes
         run: |
           cd ./k8s
-          kubectl create namespace teoschool
-          kubectl apply -f redis.yaml
           kubectl apply -f hasher.yaml
-          kubectl apply -f rng.yaml
-          kubectl apply -f worker.yaml
-          kubectl apply -f webui.yaml
-          kubectl apply -f svc-hasher.yaml
-          kubectl apply -f svc-rng.yaml
-          kubectl apply -f svc-redis.yaml
-          kubectl apply -f svc-webui.yaml
+        #  kubectl create namespace teoschool
+        #  kubectl apply -f redis.yaml
+        #  kubectl apply -f hasher.yaml
+        #  kubectl apply -f rng.yaml
+        #  kubectl apply -f worker.yaml
+        #  kubectl apply -f webui.yaml
+        #  kubectl apply -f svc-hasher.yaml
+        #  kubectl apply -f svc-rng.yaml
+        #  kubectl apply -f svc-redis.yaml
+        #  kubectl apply -f svc-webui.yaml
         
       - name: Pause for 5 seconds
         run: |
