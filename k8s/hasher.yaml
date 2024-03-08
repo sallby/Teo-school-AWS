@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: hasher
-          image: ${{ var.IMAGE_ID }}.dkr.ecr.us-east-1.amazonaws.com/crdjiby:hasher-v1.2.0
+          image: var.IMAGE_ID.dkr.ecr.us-east-1.amazonaws.com/crdjiby:hasher-v1.2.0
           resources:
             requests:
               memory: "30Mi"
