@@ -42,7 +42,6 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           cd ./k8s
-          kubectl apply -f hasher.yaml
           kubectl create namespace teoschool
           kubectl apply -f redis.yaml
           kubectl apply -f hasher.yaml
