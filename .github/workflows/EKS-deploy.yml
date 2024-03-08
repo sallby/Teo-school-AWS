@@ -39,6 +39,7 @@ jobs:
 
       - name: Replace Variable in hasher.yaml
         run: |
+          cd ./k8s
           sed -i "s|var.IMAGE_ID|$AWS_ACCOUNT_ID|g" hasher.yaml
         
       - name: Deploy to Kubernetes
