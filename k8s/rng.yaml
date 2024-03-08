@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: rng
-          image: 492364703439.dkr.ecr.us-east-1.amazonaws.com/crdjiby:img_rng-v1.0.0
+          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/crdjiby:img_rng-v1.0.0
           resources:
             requests:
               memory: "30Mi"

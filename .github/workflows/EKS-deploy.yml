@@ -25,6 +25,11 @@ jobs:
 
       - name: Get credentials
         run: aws eks --region ${AWS_REGION} update-kubeconfig --name djiby-eks-cluster
+
+      - name: Define AWS Account ID
+        run: |
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID" >> $GITHUB_ENV
         
       - name: Deploy to Kubernetes
         run: |
